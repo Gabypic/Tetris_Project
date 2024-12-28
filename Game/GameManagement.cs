@@ -1,34 +1,60 @@
 ﻿using System;
 using System.Drawing;
+using System.Windows.Forms;
+using Tetris.Pieces;
 
 namespace Tetris.Game
 {
     public class GameManagement
     {
-        public const int GridWidth = 10; // Largeur de la grille
-        public const int GridHeight = 20; // Hauteur de la grille
-        public Color[,] Grid { get; private set; }
+        public const int GridWidth = 10;
+        public const int GridHeight = 20;
+        public Color[,] Grid { get; set; }
+        private Form _gameForm;
 
-        public GameManagement()
+
+        public GameManagement(Form gameForm)
         {
-            // Initialisation de la grille (10x20), chaque case par défaut est blanche
+            _gameForm = gameForm;
             Grid = new Color[GridWidth, GridHeight];
-            for (int x = 0; x < GridWidth; x++)
+            InitializeGrid();
+        }
+
+        private void InitializeGrid()
+        {
+            for (int x = 0; x < Grid.GetLength(0); x++)
             {
-                for (int y = 0; y < GridHeight; y++)
+                for (int y = 0; y < Grid.GetLength(1); y++)
                 {
-                    Grid[x, y] = Color.Black; // Initialement, toutes les cases sont blanches
+                    Grid[x, y] = Color.Black;
                 }
             }
         }
 
-        // Méthode pour colorier une case spécifique
-        public void ColorCell(int x, int y, Color color)
+        public GameManagement()
         {
+            Grid = new Color[GridWidth, GridHeight];
+            InitializeGrid();
+        }
+
+        public void ColorCell(int x, int y, Color color, Form form)
+        {
+            Console.WriteLine("ici colorcell ?");
             if (x >= 0 && x < GridWidth && y >= 0 && y < GridHeight)
             {
+                Console.WriteLine(color.ToString() + " " + form);
                 Grid[x, y] = color;
+                form.Invoke((MethodInvoker)delegate {
+                    Console.WriteLine("tu entre ici ?");
+                    form.Invalidate();
+                });
+                Console.WriteLine("tu entre pas, mais au moins tu sort ?");
             }
+        }
+
+        public void FallRender(int x, int y)
+        {
+            Grid[x, y] = Color.Black;
         }
     }
 }

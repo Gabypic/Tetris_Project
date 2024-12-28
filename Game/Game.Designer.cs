@@ -32,12 +32,14 @@
             // 
             // Game
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.SystemColors.GrayText;
             BackgroundImage = Properties.Resources.fond_tetris;
-            ClientSize = new System.Drawing.Size(558, 817);
+            BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            ClientSize = new System.Drawing.Size(488, 613);
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             MaximizeBox = false;
             Name = "Game";
             Text = "Game";
