@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Threading;
 using System.Timers;
 using System.Windows.Forms;
+using System.Windows.Input;
+using Microsoft.VisualBasic.Devices;
 using Tetris.Pieces;
 
 namespace Tetris.Game
@@ -40,7 +42,6 @@ namespace Tetris.Game
             }
 
             timer = new System.Timers.Timer(speed);
-            //timer.Elapsed += OnTimerElapsed;
             timer.Start();
 
             TestPieces = new I_Piece(_gameManagement);
@@ -49,8 +50,8 @@ namespace Tetris.Game
             TestPieces.Place(_gameForm);
             Console.WriteLine("caca "+_gameForm);
 
-            //try
-            //{
+            try
+            {
                 if (_gameForm != null && !_gameForm.IsDisposed && _gameForm.Visible)
                 {
                     Console.WriteLine("Avant Invalidate");
@@ -67,14 +68,29 @@ namespace Tetris.Game
                 {
                     Console.WriteLine("Erreur : _gameForm est soit fermé, soit invisible.");
                 }
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine($"Erreur lors de l'appel à Invalidate : {ex.Message}");
-            //}
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de l'appel à Invalidate : {ex.Message}");
+            }
 
             while (!win)
             {
+                string lastPressedKey = (_gameForm as Game)?.GetPressedKey();
+                if (!string.IsNullOrEmpty(lastPressedKey))
+                {
+                    Console.WriteLine($"Key pressed: {lastPressedKey}");
+                    if (lastPressedKey == "D")
+                    {
+                        TestPieces.MoveRightLeft(_gameForm, 1);
+                    }
+                    if (lastPressedKey == "Q") 
+                    {
+                        TestPieces.MoveRightLeft(_gameForm, -1);
+                    }
+                    (_gameForm as Game).pressedKey = "";
+                }
+
                 TestPieces.Fall(_gameForm);
                 Console.WriteLine("Score: " + score);
                 score += 10;

@@ -1,4 +1,6 @@
-﻿namespace Tetris.Game
+﻿using System.Windows.Forms;
+
+namespace Tetris.Game
 {
     partial class Game
     {

@@ -9,15 +9,42 @@ namespace Tetris.Game
     public partial class Game : Form
     {
         private GameManagement _gameManagement;
+        public string pressedKey = "";
 
         private void Game_Load(object sender, EventArgs e)
         {
         }
 
+        public void Game_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode) 
+            {
+                case Keys.D:
+                    Console.WriteLine("hello rayou");
+                    pressedKey = "D";
+                    break;
+
+                case Keys.Q:
+                    Console.WriteLine("Merci Rayou");
+                    pressedKey = "Q";
+                    break;
+
+                default:
+                    return;
+            }
+        }
+
+        public string GetPressedKey()
+        {
+            return pressedKey;
+        }
+
+
         public Game()
         {
             this.DoubleBuffered = true;
             InitializeComponent();
+            this.KeyDown += new KeyEventHandler(Game_KeyDown);
             _gameManagement = new GameManagement();
             Console.WriteLine(_gameManagement);
 

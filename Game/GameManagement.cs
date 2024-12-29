@@ -52,7 +52,7 @@ namespace Tetris.Game
             }
         }
 
-        public void FallRender(int x, int y)
+        public void ChangeRender(int x, int y)
         {
             Grid[x, y] = Color.Black;
         }
