@@ -15,6 +15,8 @@ namespace Tetris.Pieces
         public List<Point> Blocks { get; protected set; }
         public Point Pop_Point { get; protected set; }
         private Form _gameForm;
+        public int fallState = 0;
+        public bool fallCompleted;
 
         protected GeneralPieces(GameManagement gameManagement)
         {
@@ -28,32 +30,24 @@ namespace Tetris.Pieces
         public void Place(Form form)
         {
             Console.WriteLine("hello there");
-            foreach (var block in Blocks)
-            {
-                if (block.X >= 0 && block.X < GameManagement.GridWidth && block.Y >= 0 && block.Y < GameManagement.GridHeight)
-                {
-                    Console.WriteLine($"Block dans la grille : {block.X}, {block.Y}");
-                    GameManagement.ColorCell(block.X, block.Y, Color, form);
-                }
-                else
-                {
-                    Console.WriteLine($"Block hors de la grille : {block.X}, {block.Y}");
-                }
-            }
+            GameManagement.ColorCell(Blocks, Color, form);
         }
 
-        public void Fall(Form form)
+        public bool Fall(Form form)
         {
+            fallState += 1;
             foreach (var block in Blocks)
             {
                 GameManagement.ChangeRender(block.X, block.Y);
             }
-
-            for (int i = 0; i < Blocks.Count; i++)
+            fallCompleted = GameManagement.ColorCell(Blocks, Color, form);
+            if (fallCompleted)
             {
-                var block = Blocks[i];
-                Blocks[i] = new Point(block.X, block.Y + 1);
-                GameManagement.ColorCell(Blocks[i].X, Blocks[i].Y, Color, form);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -77,7 +71,16 @@ namespace Tetris.Pieces
 
         public void Turn(Form form)
         {
-            Console.WriteLine();
+            if (form == null)
+            {
+                return;
+            }
+            foreach(var block in Blocks)
+            {
+                GameManagement.ChangeRender(block.X, block.Y);
+            }
+            RotationStates();
+            Place(form);
         }
     }
 }

@@ -29,6 +29,11 @@ namespace Tetris.Game
                     pressedKey = "Q";
                     break;
 
+                case Keys.Z:
+                    Console.WriteLine("Ca tourne");
+                    pressedKey = "Z";
+                    break;
+
                 default:
                     return;
             }

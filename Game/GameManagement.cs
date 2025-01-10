@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Windows.Forms;
 using Tetris.Pieces;
 
@@ -11,6 +13,7 @@ namespace Tetris.Game
         public const int GridHeight = 20;
         public Color[,] Grid { get; set; }
         private Form _gameForm;
+        private bool canFall;
 
 
         public GameManagement(Form gameForm)
@@ -37,19 +40,33 @@ namespace Tetris.Game
             InitializeGrid();
         }
 
-        public void ColorCell(int x, int y, Color color, Form form)
+        public bool ColorCell(List<Point> blocks, Color color, Form form)
         {
+            canFall = true;
             Console.WriteLine("ici colorcell ?");
-            if (x >= 0 && x < GridWidth && y >= 0 && y < GridHeight)
+            foreach (var block in blocks)
             {
-                Console.WriteLine(color.ToString() + " " + form);
-                Grid[x, y] = color;
-                form.Invoke((MethodInvoker)delegate {
-                    Console.WriteLine("tu entre ici ?");
-                    form.Invalidate();
-                });
-                Console.WriteLine("tu entre pas, mais au moins tu sort ?");
+                if (!(block.X >= 0 && block.X < GridWidth && block.Y >= 0 && block.Y < GridHeight))
+                {
+                    canFall = false;
+                }
             }
+            if (canFall)
+            {
+                foreach (var block in blocks)
+                {
+                    Console.WriteLine(color.ToString() + " " + form);
+                    Grid[block.X, block.Y] = color;
+                    form.Invoke((MethodInvoker)delegate
+                    {
+                        Console.WriteLine("tu entre ici ?");
+                        form.Invalidate();
+                    });
+                    Console.WriteLine("tu entre pas, mais au moins tu sort ?");
+                    return false;
+                }
+            }
+            return true;
         }
 
         public void ChangeRender(int x, int y)

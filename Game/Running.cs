@@ -16,9 +16,10 @@ namespace Tetris.Game
         static int score = 0;
         static double speed = 1000;
         static double increase_speed = 50;
-        private GeneralPieces? TestPieces;
+        private GeneralPieces? Piece;
         private GameManagement? _gameManagement;
         private Form _gameForm;
+        private bool fullFall;
 
         public Running(Form gameForm, GameManagement gameManagement)
         {
@@ -43,12 +44,6 @@ namespace Tetris.Game
 
             timer = new System.Timers.Timer(speed);
             timer.Start();
-
-            TestPieces = new I_Piece(_gameManagement);
-            Console.WriteLine($"TestPieces : {TestPieces} game Form : {_gameForm}");
-
-            TestPieces.Place(_gameForm);
-            Console.WriteLine("caca "+_gameForm);
 
             try
             {
@@ -76,22 +71,32 @@ namespace Tetris.Game
 
             while (!loose)
             {
+                if (fullFall)
+                {
+                    Piece = new RandomPiece(_gameManagement).NewRandomPiece();
+                    Piece.Place(_gameForm);
+                }
                 string lastPressedKey = (_gameForm as Game)?.GetPressedKey();
                 if (!string.IsNullOrEmpty(lastPressedKey))
                 {
                     Console.WriteLine($"Key pressed: {lastPressedKey}");
                     if (lastPressedKey == "D")
                     {
-                        TestPieces.MoveRightLeft(_gameForm, 1);
+                        Piece.MoveRightLeft(_gameForm, 1);
                     }
                     if (lastPressedKey == "Q") 
                     {
-                        TestPieces.MoveRightLeft(_gameForm, -1);
+                        Piece.MoveRightLeft(_gameForm, -1);
+                    }
+                    if (lastPressedKey == "Z")
+                    {
+                        Console.WriteLine(lastPressedKey);
+                        Piece.Turn(_gameForm);
                     }
                     (_gameForm as Game).pressedKey = "";
                 }
 
-                TestPieces.Fall(_gameForm);
+                fullFall = Piece.Fall(_gameForm);
                 Console.WriteLine("Score: " + score);
                 score += 10;
                 AdjustTimerSpeed();

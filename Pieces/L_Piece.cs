@@ -7,7 +7,7 @@ namespace Tetris.Pieces
 {
     internal class L_Piece : GeneralPieces
     {
-        private int state = 3;
+        private int state = 0;
 
         public L_Piece(GameManagement gameManagement) : base(gameManagement)
         {
@@ -27,13 +27,37 @@ namespace Tetris.Pieces
 
         protected override void RotationStates()
         {
-            state += 1;
-            if (state >= 4)
+            Blocks.Clear();
+            state = (state + 1) % 4;
+            switch (state)
             {
-                state = 0;
-            }
-            if (state == 0)
-            {
+                case 0:
+                    Blocks.Add(new Point(Pop_Point.X, Pop_Point.Y + fallState));
+                    Blocks.Add(new Point(Pop_Point.X + 1, Pop_Point.Y + fallState));
+                    Blocks.Add(new Point(Pop_Point.X + 2, Pop_Point.Y + fallState));
+                    Blocks.Add(new Point(Pop_Point.X + 2, Pop_Point.Y + 1 + fallState));
+                    break;
+
+                case 1:
+                    Blocks.Add(new Point(Pop_Point.X + 1, Pop_Point.Y + fallState));
+                    Blocks.Add(new Point(Pop_Point.X + 1, Pop_Point.Y + 1 + fallState));
+                    Blocks.Add(new Point(Pop_Point.X + 1, Pop_Point.Y + 2 + fallState));
+                    Blocks.Add(new Point(Pop_Point.X, Pop_Point.Y + 2 + fallState));
+                    break;
+
+                case 2:
+                    Blocks.Add(new Point(Pop_Point.X, Pop_Point.Y + fallState));
+                    Blocks.Add(new Point(Pop_Point.X, Pop_Point.Y + 1 + fallState));
+                    Blocks.Add(new Point(Pop_Point.X + 1, Pop_Point.Y + 1 + fallState));
+                    Blocks.Add(new Point(Pop_Point.X + 2, Pop_Point.Y + 1 + fallState));
+                    break;
+
+                case 3:
+                    Blocks.Add(new Point(Pop_Point.X, Pop_Point.Y + fallState));
+                    Blocks.Add(new Point(Pop_Point.X + 1, Pop_Point.Y + fallState));
+                    Blocks.Add(new Point(Pop_Point.X + 1, Pop_Point.Y + 1 + fallState));
+                    Blocks.Add(new Point(Pop_Point.X + 1, Pop_Point.Y + 2 + fallState));
+                    break;
             }
         }
     }
