@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 using Tetris.Game;
 
@@ -13,7 +14,7 @@ namespace Tetris.Pieces
         public Color Color { get; protected set; }
         public List<Point> Blocks { get; protected set; }
         public Point Pop_Point { get; protected set; }
-        //private Form _gameForm;
+        private Form _gameForm;
 
         protected GeneralPieces(GameManagement gameManagement)
         {
@@ -22,6 +23,7 @@ namespace Tetris.Pieces
         }
 
         protected abstract void InitializeBlocks();
+        protected abstract void RotationStates();
 
         public void Place(Form form)
         {
@@ -61,16 +63,21 @@ namespace Tetris.Pieces
             {
                 return;
             }
-            foreach(var block in Blocks)
+            foreach (var block in Blocks)
             {
                 GameManagement.ChangeRender(block.X, block.Y);
             }
 
-            for (int i = 0;i < Blocks.Count; i++)
+            for (int i = 0; i < Blocks.Count; i++)
             {
                 var block = Blocks[i];
                 Blocks[i] = new Point(block.X + direction, block.Y);
             }
+        }
+
+        public void Turn(Form form)
+        {
+            Console.WriteLine();
         }
     }
 }

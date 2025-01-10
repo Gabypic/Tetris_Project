@@ -12,7 +12,7 @@ namespace Tetris.Game
     public class Running
     {
         static System.Timers.Timer? timer;
-        static bool win = false;
+        static bool loose = false;
         static int score = 0;
         static double speed = 1000;
         static double increase_speed = 50;
@@ -74,7 +74,7 @@ namespace Tetris.Game
                 Console.WriteLine($"Erreur lors de l'appel à Invalidate : {ex.Message}");
             }
 
-            while (!win)
+            while (!loose)
             {
                 string lastPressedKey = (_gameForm as Game)?.GetPressedKey();
                 if (!string.IsNullOrEmpty(lastPressedKey))

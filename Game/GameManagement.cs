@@ -54,7 +54,10 @@ namespace Tetris.Game
 
         public void ChangeRender(int x, int y)
         {
-            Grid[x, y] = Color.Black;
+            if (x >= 0 && x < GridWidth && y >= 0 && y < GridHeight)
+            {
+                Grid[x, y] = Color.Black;
+            }
         }
     }
 }
