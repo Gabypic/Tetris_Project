@@ -63,10 +63,9 @@ namespace Tetris.Game
                         form.Invalidate();
                     });
                     Console.WriteLine("tu entre pas, mais au moins tu sort ?");
-                    return false;
-                }
+                    }
             }
-            return true;
+            return canFall;
         }
 
         public void ChangeRender(int x, int y)
