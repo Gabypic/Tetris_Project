@@ -14,7 +14,6 @@ namespace Tetris.Pieces
         public Color Color { get; protected set; }
         public List<Point> Blocks { get; protected set; }
         public Point Pop_Point { get; protected set; }
-        private Form _gameForm;
         public int fallState = 0;
         public bool fallCompleted;
 
@@ -39,6 +38,11 @@ namespace Tetris.Pieces
             foreach (var block in Blocks)
             {
                 GameManagement.ChangeRender(block.X, block.Y);
+            }
+            for (int i = 0; i < Blocks.Count; i++)
+            {
+                var block = Blocks[i];
+                Blocks[i] = new Point(block.X, block.Y + 1);
             }
             fallCompleted = GameManagement.ColorCell(Blocks, Color, form);
             if (fallCompleted)

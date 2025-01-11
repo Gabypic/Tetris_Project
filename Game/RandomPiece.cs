@@ -12,7 +12,6 @@ namespace Tetris.Game
     {
         Random random = new Random();
         private GameManagement _gameManagement;
-        private Form _gameForm;
 
         public RandomPiece(GameManagement gameManagement)
         {
@@ -21,7 +20,7 @@ namespace Tetris.Game
 
         public GeneralPieces NewRandomPiece()
         {
-            int randomPiece = random.Next(0, 7);
+            int randomPiece = random.Next(0, 8);
             switch (randomPiece)
             {
                 case 0:

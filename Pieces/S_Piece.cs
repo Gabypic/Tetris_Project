@@ -26,6 +26,7 @@ namespace Tetris.Pieces
 
         protected override void RotationStates()
         {
+            Blocks.Clear();
             state = (state + 1) % 2;
 
             switch (state)

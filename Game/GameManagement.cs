@@ -13,7 +13,7 @@ namespace Tetris.Game
         public const int GridHeight = 20;
         public Color[,] Grid { get; set; }
         private Form _gameForm;
-        private bool canFall;
+        private bool notFullDown;
 
 
         public GameManagement(Form gameForm)
@@ -42,31 +42,46 @@ namespace Tetris.Game
 
         public bool ColorCell(List<Point> blocks, Color color, Form form)
         {
-            canFall = true;
-            Console.WriteLine("ici colorcell ?");
+            notFullDown = false;
+
             foreach (var block in blocks)
             {
-                if (!(block.X >= 0 && block.X < GridWidth && block.Y >= 0 && block.Y < GridHeight))
+                if (block.X < 0 || block.X >= GridWidth || block.Y >= GridHeight)
                 {
-                    canFall = false;
+                    Console.WriteLine($"Bloc hors cadre : {block}");
+                    notFullDown = false;
+                    return notFullDown;
+                }
+                if (block.Y + 1 < GridHeight && Grid[block.X, block.Y + 1] != Color.Black)
+                {
+                    Console.WriteLine($"Collision détectée pour le bloc : {block}");
+                    notFullDown = true;
+                    return notFullDown;
+                }
+                if (block.Y == GridHeight - 1)
+                {
+                    Console.WriteLine("La pièce a atteint le bas de la grille.");
+                    notFullDown = true;
+                    return notFullDown;
                 }
             }
-            if (canFall)
+            if (!notFullDown)
             {
                 foreach (var block in blocks)
                 {
-                    Console.WriteLine(color.ToString() + " " + form);
+                    Console.WriteLine($"Coloration : {color} sur {block}");
                     Grid[block.X, block.Y] = color;
+
                     form.Invoke((MethodInvoker)delegate
                     {
-                        Console.WriteLine("tu entre ici ?");
                         form.Invalidate();
                     });
-                    Console.WriteLine("tu entre pas, mais au moins tu sort ?");
-                    }
+                }
             }
-            return canFall;
+
+            return notFullDown;
         }
+
 
         public void ChangeRender(int x, int y)
         {

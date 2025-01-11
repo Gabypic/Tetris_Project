@@ -49,10 +49,10 @@ namespace Tetris.Pieces
                     break;
 
                 case 3:
-                    Blocks.Add(new Point(Pop_Point.X, Pop_Point.Y + fallState));
-                    Blocks.Add(new Point(Pop_Point.X, Pop_Point.Y + 1 + fallState));
+                    Blocks.Add(new Point(Pop_Point.X + 1, Pop_Point.Y + fallState));
                     Blocks.Add(new Point(Pop_Point.X + 1, Pop_Point.Y + 1 + fallState));
-                    Blocks.Add(new Point(Pop_Point.X + 2, Pop_Point.Y + 1 + fallState));
+                    Blocks.Add(new Point(Pop_Point.X + 1, Pop_Point.Y + 2 + fallState));
+                    Blocks.Add(new Point(Pop_Point.X, Pop_Point.Y + 2 + fallState));
                     break;
             }
         }

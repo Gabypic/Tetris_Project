@@ -49,15 +49,12 @@ namespace Tetris.Game
             {
                 if (_gameForm != null && !_gameForm.IsDisposed && _gameForm.Visible)
                 {
-                    Console.WriteLine("Avant Invalidate");
                     _gameForm.BeginInvoke((MethodInvoker)delegate
                     {
                         Console.WriteLine("Invalidate via BeginInvoke");
                         _gameForm.Invalidate();
                     });
                     Application.DoEvents();
-
-                    Console.WriteLine("Après Invalidate");
                 }
                 else
                 {
@@ -71,15 +68,16 @@ namespace Tetris.Game
 
             while (!loose)
             {
-                if (fullFall)
+                Console.WriteLine(fullFall + " T true ? 1");
+                if (fullFall || score <= 0)
                 {
                     Piece = new RandomPiece(_gameManagement).NewRandomPiece();
                     Piece.Place(_gameForm);
                 }
+                Console.WriteLine("2");
                 string lastPressedKey = (_gameForm as Game)?.GetPressedKey();
                 if (!string.IsNullOrEmpty(lastPressedKey))
                 {
-                    Console.WriteLine($"Key pressed: {lastPressedKey}");
                     if (lastPressedKey == "D")
                     {
                         Piece.MoveRightLeft(_gameForm, 1);
@@ -90,14 +88,14 @@ namespace Tetris.Game
                     }
                     if (lastPressedKey == "Z")
                     {
-                        Console.WriteLine(lastPressedKey);
                         Piece.Turn(_gameForm);
                     }
                     (_gameForm as Game).pressedKey = "";
                 }
-
+                Console.WriteLine("3");
                 fullFall = Piece.Fall(_gameForm);
-                Console.WriteLine("Score: " + score);
+                Console.WriteLine("4");
+                Console.WriteLine("Score: " + score + " 5");
                 score += 10;
                 AdjustTimerSpeed();
                 Thread.Sleep(1000);

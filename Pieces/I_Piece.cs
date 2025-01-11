@@ -16,10 +16,10 @@ namespace Tetris.Pieces
 
         protected override void InitializeBlocks()
         {
-            Blocks.Add(new Point(Pop_Point.X + 2, Pop_Point.Y - 1));
+            Blocks.Add(new Point(Pop_Point.X, Pop_Point.Y));
+            Blocks.Add(new Point(Pop_Point.X + 1, Pop_Point.Y));
             Blocks.Add(new Point(Pop_Point.X + 2, Pop_Point.Y));
-            Blocks.Add(new Point(Pop_Point.X + 2, Pop_Point.Y + 1));
-            Blocks.Add(new Point(Pop_Point.X + 2, Pop_Point.Y + 2));
+            Blocks.Add(new Point(Pop_Point.X + 23, Pop_Point.Y));
         }
 
         protected override void RotationStates()
