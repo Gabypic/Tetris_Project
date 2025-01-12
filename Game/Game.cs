@@ -10,6 +10,7 @@ namespace Tetris.Game
     {
         private GameManagement _gameManagement;
         public string pressedKey = "";
+        private Running _running;
 
         private void Game_Load(object sender, EventArgs e)
         {
@@ -20,18 +21,23 @@ namespace Tetris.Game
             switch (e.KeyCode) 
             {
                 case Keys.D:
-                    Console.WriteLine("hello rayou");
                     pressedKey = "D";
                     break;
 
                 case Keys.Q:
-                    Console.WriteLine("Merci Rayou");
                     pressedKey = "Q";
                     break;
 
                 case Keys.Z:
-                    Console.WriteLine("Ca tourne");
                     pressedKey = "Z";
+                    break;
+
+                case Keys.S:
+                    pressedKey = "S";
+                    break;
+
+                case Keys.Space:
+                    pressedKey = " ";
                     break;
 
                 default:
@@ -49,14 +55,19 @@ namespace Tetris.Game
         {
             this.DoubleBuffered = true;
             InitializeComponent();
+
+            this.FormClosed += Game_FormClosed;
+
             this.KeyDown += new KeyEventHandler(Game_KeyDown);
             _gameManagement = new GameManagement();
             Console.WriteLine(_gameManagement);
 
+            _running = new Running(this, _gameManagement);
+
             Task.Run(() =>
             {
-                Running run = new Running(this, _gameManagement);
-                run.LaunchGame();
+                _running.LaunchGame();
+                
             });
         }
 
@@ -102,6 +113,17 @@ namespace Tetris.Game
         {
             base.OnPaint(e);
             Game_Paint(this, e);
+        }
+
+        private void Game_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            StopGame();
+        }
+
+        private void StopGame()
+        {
+            _running.StopGame();
+            Console.WriteLine("Le jeu a été arrêté proprement.");
         }
     }
 }

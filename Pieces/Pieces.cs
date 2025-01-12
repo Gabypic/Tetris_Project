@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Linq.Expressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 using Tetris.Game;
@@ -15,7 +16,7 @@ namespace Tetris.Pieces
         public List<Point> Blocks { get; protected set; }
         public Point Pop_Point { get; protected set; }
         public int fallState = 0;
-        public bool fallCompleted;
+        public int moveState = 0;
 
         protected GeneralPieces(GameManagement gameManagement)
         {
@@ -28,48 +29,85 @@ namespace Tetris.Pieces
 
         public void Place(Form form)
         {
-            Console.WriteLine("hello there");
             GameManagement.ColorCell(Blocks, Color, form);
         }
 
         public bool Fall(Form form)
         {
-            fallState += 1;
+            fallState++;
+
+            bool shouldStopFalling = false;
+
             foreach (var block in Blocks)
             {
-                GameManagement.ChangeRender(block.X, block.Y);
+                if (block.Y + 1 >= GameManagement.GridHeight || 
+                    (GameManagement.Grid[block.X, block.Y + 1] != Color.Black &&
+                     GameManagement.Grid[block.X, block.Y + 1] != Color))
+                {
+                    shouldStopFalling = true;
+                    break;
+                }
             }
-            for (int i = 0; i < Blocks.Count; i++)
+
+            if (shouldStopFalling)
             {
-                var block = Blocks[i];
-                Blocks[i] = new Point(block.X, block.Y + 1);
-            }
-            fallCompleted = GameManagement.ColorCell(Blocks, Color, form);
-            if (fallCompleted)
-            {
+                Color finalColor;
+                foreach (var block in Blocks)
+                {
+                    finalColor = GameManagement.DarkenColor(Color, 0.2f);
+                    GameManagement.Grid[block.X, block.Y] = finalColor;
+                }
                 return true;
             }
-            else
+
+            var updatedBlocks = new List<Point>();
+            foreach (var block in Blocks)
             {
-                return false;
+                updatedBlocks.Add(new Point(block.X, block.Y + 1));
+                GameManagement.ChangeRender(block.X, block.Y);
             }
+
+            Blocks = updatedBlocks;
+
+            GameManagement.ColorCell(Blocks, Color, form);
+
+            return false;
         }
+
 
         public void MoveRightLeft(Form form, int direction)
         {
+            moveState += direction;
+            bool canMove = true;
             if (form == null)
             {
                 return;
             }
+
             foreach (var block in Blocks)
             {
-                GameManagement.ChangeRender(block.X, block.Y);
+                int newX = block.X + direction;
+                if (newX >= GameManagement.GridWidth || newX < 0 || 
+                    (GameManagement.Grid[block.X + direction, block.Y] != Color.Black &&
+                     GameManagement.Grid[block.X + direction, block.Y] != Color))
+                {
+                    canMove = false;
+                    break;
+                }
             }
 
-            for (int i = 0; i < Blocks.Count; i++)
+            if (canMove)
             {
-                var block = Blocks[i];
-                Blocks[i] = new Point(block.X + direction, block.Y);
+                foreach (var block in Blocks)
+                {
+                    GameManagement.ChangeRender(block.X, block.Y);
+                }
+                for (int i = 0; i < Blocks.Count; i++)
+                {
+                    var block = Blocks[i];
+                    Blocks[i] = new Point(block.X + direction, block.Y);
+                }
+                GameManagement.ColorCell(Blocks, Color, form);
             }
         }
 
@@ -79,11 +117,46 @@ namespace Tetris.Pieces
             {
                 return;
             }
-            foreach(var block in Blocks)
+
+            foreach (var block in Blocks)
             {
                 GameManagement.ChangeRender(block.X, block.Y);
             }
+
+            var originalState = new List<Point>(Blocks);
+            var validRotation = true;
+
             RotationStates();
+
+            foreach (var block in Blocks)
+            {
+                if (block.X < 0 || block.X >= GameManagement.GridWidth ||
+                    block.Y < 0 || block.Y >= GameManagement.GridHeight)
+                {
+                    validRotation = false;
+                    break;
+                }
+
+                if (GameManagement.Grid[block.X, block.Y] != Color.Black &&
+                    GameManagement.Grid[block.X, block.Y] != Color)
+                {
+                    validRotation = false;
+                    break;
+                }
+            }
+
+            if (!validRotation)
+            {
+                Blocks = originalState;
+                Place(form);
+                return;
+            }
+
+            foreach (var block in Blocks)
+            {
+                Console.WriteLine("tu vient la ?");
+                GameManagement.ChangeRender(block.X, block.Y);
+            }
             Place(form);
         }
     }

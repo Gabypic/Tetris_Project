@@ -46,49 +46,97 @@ namespace Tetris.Game
 
             foreach (var block in blocks)
             {
-                if (block.X < 0 || block.X >= GridWidth || block.Y >= GridHeight)
+                if (block.X < 0 || block.X >= GridWidth || block.Y > GridHeight)
                 {
-                    Console.WriteLine($"Bloc hors cadre : {block}");
                     notFullDown = false;
                     return notFullDown;
                 }
-                if (block.Y + 1 < GridHeight && Grid[block.X, block.Y + 1] != Color.Black)
+
+                if (block.Y == GridHeight)
                 {
-                    Console.WriteLine($"Collision détectée pour le bloc : {block}");
-                    notFullDown = true;
-                    return notFullDown;
-                }
-                if (block.Y == GridHeight - 1)
-                {
-                    Console.WriteLine("La pièce a atteint le bas de la grille.");
                     notFullDown = true;
                     return notFullDown;
                 }
             }
+
             if (!notFullDown)
             {
                 foreach (var block in blocks)
                 {
-                    Console.WriteLine($"Coloration : {color} sur {block}");
                     Grid[block.X, block.Y] = color;
-
-                    form.Invoke((MethodInvoker)delegate
-                    {
-                        form.Invalidate();
-                    });
                 }
-            }
 
+                form.Invoke((MethodInvoker)delegate
+                {
+                    form.Invalidate();
+                });
+            }
             return notFullDown;
         }
+
 
 
         public void ChangeRender(int x, int y)
         {
             if (x >= 0 && x < GridWidth && y >= 0 && y < GridHeight)
             {
+                if (Grid[x, y] == Color.Black)
+                    return;
+
                 Grid[x, y] = Color.Black;
             }
         }
+
+        public void CheckFullLines()
+        {
+            for (int y = 0; y < GridHeight; y++)
+            {
+                bool isFullLine = true;
+                for (int x = 0; x < GridWidth; x++)
+                {
+                    if (Grid[x, y] == Color.Black)
+                    {
+                        isFullLine = false;
+                        break;
+                    }
+                }
+
+                if (isFullLine)
+                {
+                    ClearLine(y);
+                }
+            }
+        }
+
+        private void ClearLine(int y)
+        {
+            for (int x = 0; x < GridWidth; x++)
+            {
+                Grid[x, y] = Color.Black;
+            }
+
+            for (int j = y; j > 0; j--)
+            {
+                for (int x = 0; x < GridWidth; x++)
+                {
+                    Grid[x, j] = Grid[x, j - 1];
+                }
+            }
+        }
+
+        public Color DarkenColor(Color originalColor, float percentage)
+        {
+            int r = (int)(originalColor.R * (1 - percentage));
+            int g = (int)(originalColor.G * (1 - percentage));
+            int b = (int)(originalColor.B * (1 - percentage));
+
+            r = Math.Max(0, Math.Min(255, r));
+            g = Math.Max(0, Math.Min(255, g));
+            b = Math.Max(0, Math.Min(255, b));
+
+            return Color.FromArgb(originalColor.A, r, g, b);
+        }
+
+
     }
 }

@@ -20,11 +20,16 @@ namespace Tetris.Game
         private GameManagement? _gameManagement;
         private Form _gameForm;
         private bool fullFall;
+        private System.Timers.Timer movementTimer;
 
         public Running(Form gameForm, GameManagement gameManagement)
         {
             _gameForm = gameForm;
             _gameManagement = gameManagement;
+
+            movementTimer = new System.Timers.Timer(50); // Vérifie les mouvements toutes les 50ms
+            movementTimer.Elapsed += (sender, e) => Movement();
+            movementTimer.Start();
         }
 
         public void LaunchGame()
@@ -51,7 +56,6 @@ namespace Tetris.Game
                 {
                     _gameForm.BeginInvoke((MethodInvoker)delegate
                     {
-                        Console.WriteLine("Invalidate via BeginInvoke");
                         _gameForm.Invalidate();
                     });
                     Application.DoEvents();
@@ -68,46 +72,19 @@ namespace Tetris.Game
 
             while (!loose)
             {
-                Console.WriteLine(fullFall + " T true ? 1");
                 if (fullFall || score <= 0)
                 {
+                    _gameManagement.CheckFullLines();
                     Piece = new RandomPiece(_gameManagement).NewRandomPiece();
                     Piece.Place(_gameForm);
                 }
-                Console.WriteLine("2");
-                string lastPressedKey = (_gameForm as Game)?.GetPressedKey();
-                if (!string.IsNullOrEmpty(lastPressedKey))
-                {
-                    if (lastPressedKey == "D")
-                    {
-                        Piece.MoveRightLeft(_gameForm, 1);
-                    }
-                    if (lastPressedKey == "Q") 
-                    {
-                        Piece.MoveRightLeft(_gameForm, -1);
-                    }
-                    if (lastPressedKey == "Z")
-                    {
-                        Piece.Turn(_gameForm);
-                    }
-                    (_gameForm as Game).pressedKey = "";
-                }
-                Console.WriteLine("3");
                 fullFall = Piece.Fall(_gameForm);
-                Console.WriteLine("4");
-                Console.WriteLine("Score: " + score + " 5");
                 score += 10;
                 AdjustTimerSpeed();
-                Thread.Sleep(1000);
+                Thread.Sleep(800);
             }
 
-            timer.Stop();
-            Console.WriteLine("Timer Stopped");
-        }
-
-        private static void OnTimerElapsed(object sender, ElapsedEventArgs e)
-        {
-            Console.WriteLine("Timer déclenché à " + DateTime.Now);
+            StopGame();
         }
 
         private static void AdjustTimerSpeed()
@@ -124,5 +101,54 @@ namespace Tetris.Game
                 timer.Interval = targetInterval;
             }
         }
+
+        public void Movement()
+        {
+            string lastPressedKey = (_gameForm as Game)?.GetPressedKey();
+            if (!string.IsNullOrEmpty(lastPressedKey))
+            {
+                if (lastPressedKey == "D")
+                {
+                    Piece.MoveRightLeft(_gameForm, 1);
+                }
+                if (lastPressedKey == "Q")
+                {
+                    Piece.MoveRightLeft(_gameForm, -1);
+                }
+                if (lastPressedKey == "Z")
+                {
+                    Piece.Turn(_gameForm);
+                }
+                if (lastPressedKey == "S")
+                {
+                    Piece.Fall(_gameForm);
+                }
+                (_gameForm as Game).pressedKey = "";
+            }
+
+            (_gameForm as Game).pressedKey = "";
+            _gameForm.BeginInvoke((MethodInvoker)delegate
+            {
+                _gameForm.Refresh();
+            });
+
+        }
+
+        public void StopGame()
+        {
+            loose = true;
+            if (timer != null)
+            {
+                timer.Stop();
+                timer.Dispose();
+            }
+
+            if (movementTimer != null)
+            {
+                movementTimer.Stop();
+                movementTimer.Dispose();
+            }
+        }
+
     }
 }
