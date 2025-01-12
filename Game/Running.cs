@@ -12,14 +12,14 @@ namespace Tetris.Game
     public class Running
     {
         static System.Timers.Timer? timer;
-        static bool loose = false;
+        private bool loose = false;
         static int score = 0;
         static double speed = 1000;
         static double increase_speed = 50;
         private GeneralPieces? Piece;
         private GameManagement? _gameManagement;
         private Form _gameForm;
-        private bool fullFall;
+        private int fullFall;
         private System.Timers.Timer movementTimer;
 
         public Running(Form gameForm, GameManagement gameManagement)
@@ -27,7 +27,7 @@ namespace Tetris.Game
             _gameForm = gameForm;
             _gameManagement = gameManagement;
 
-            movementTimer = new System.Timers.Timer(50); // Vérifie les mouvements toutes les 50ms
+            movementTimer = new System.Timers.Timer(50);
             movementTimer.Elapsed += (sender, e) => Movement();
             movementTimer.Start();
         }
@@ -72,13 +72,16 @@ namespace Tetris.Game
 
             while (!loose)
             {
-                if (fullFall || score <= 0)
+                if (fullFall == 1 || score <= 0)
                 {
                     _gameManagement.CheckFullLines();
                     Piece = new RandomPiece(_gameManagement).NewRandomPiece();
                     Piece.Place(_gameForm);
                 }
                 fullFall = Piece.Fall(_gameForm);
+                if (fullFall == 2) 
+                    loose = true;
+                Console.WriteLine(loose);
                 score += 10;
                 AdjustTimerSpeed();
                 Thread.Sleep(800);
@@ -122,6 +125,10 @@ namespace Tetris.Game
                 if (lastPressedKey == "S")
                 {
                     Piece.Fall(_gameForm);
+                }
+                if (lastPressedKey == " ")
+                {
+                    Piece.InstantFall(_gameForm);
                 }
                 (_gameForm as Game).pressedKey = "";
             }

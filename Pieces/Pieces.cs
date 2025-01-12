@@ -32,7 +32,7 @@ namespace Tetris.Pieces
             GameManagement.ColorCell(Blocks, Color, form);
         }
 
-        public bool Fall(Form form)
+        public int Fall(Form form)
         {
             fallState++;
 
@@ -49,15 +49,26 @@ namespace Tetris.Pieces
                 }
             }
 
+            
             if (shouldStopFalling)
             {
+                int toReturn = 0;
                 Color finalColor;
                 foreach (var block in Blocks)
                 {
+                    if (block.Y < 2)
+                    {
+                        Console.WriteLine("in loose condition, " + block.Y);
+                        toReturn = 2;
+                        break;
+                    }
+
                     finalColor = GameManagement.DarkenColor(Color, 0.2f);
                     GameManagement.Grid[block.X, block.Y] = finalColor;
                 }
-                return true;
+                if (toReturn != 2) 
+                    return 1;
+                else return 2;
             }
 
             var updatedBlocks = new List<Point>();
@@ -71,7 +82,7 @@ namespace Tetris.Pieces
 
             GameManagement.ColorCell(Blocks, Color, form);
 
-            return false;
+            return 0;
         }
 
 
@@ -158,6 +169,11 @@ namespace Tetris.Pieces
                 GameManagement.ChangeRender(block.X, block.Y);
             }
             Place(form);
+        }
+
+        public void InstantFall(Form form)
+        {
+            while (Fall(form) != 1) { }
         }
     }
 }
