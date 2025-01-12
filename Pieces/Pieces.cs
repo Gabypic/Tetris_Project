@@ -175,5 +175,13 @@ namespace Tetris.Pieces
         {
             while (Fall(form) != 1) { }
         }
+
+        public void DeletePiece(Form form) 
+        {
+            foreach (var block in Blocks) 
+            {
+                GameManagement.ChangeRender(block.X, block.Y);
+            }
+        }
     }
 }

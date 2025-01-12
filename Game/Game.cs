@@ -18,7 +18,7 @@ namespace Tetris.Game
 
         public void Game_KeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.KeyCode) 
+            switch (e.KeyCode)
             {
                 case Keys.D:
                     pressedKey = "D";
@@ -36,6 +36,10 @@ namespace Tetris.Game
                     pressedKey = "S";
                     break;
 
+                case Keys.C:
+                    pressedKey = "C";
+                    break;
+
                 case Keys.Space:
                     pressedKey = " ";
                     break;
@@ -49,7 +53,6 @@ namespace Tetris.Game
         {
             return pressedKey;
         }
-
 
         public Game()
         {
@@ -67,7 +70,6 @@ namespace Tetris.Game
             Task.Run(() =>
             {
                 _running.LaunchGame();
-                
             });
         }
 
@@ -76,15 +78,8 @@ namespace Tetris.Game
             Graphics g = e.Graphics;
             int cellWidth = 30;
             int cellHeight = 30;
-
-            int startX = (this.ClientSize.Width - (GameManagement.GridWidth * cellWidth)) / 2;
+            int startX = (this.ClientSize.Width - (GameManagement.GridWidth * cellWidth)) / 3;
             int startY = (this.ClientSize.Height - (GameManagement.GridHeight * cellHeight)) / 2;
-
-            if (_gameManagement == null || _gameManagement.Grid == null)
-            {
-                Console.WriteLine("Erreur : _gameManagement ou la grille n'est pas initialisé.");
-                return;
-            }
 
             for (int x = 0; x < _gameManagement.Grid.GetLength(0); x++)
             {
@@ -98,14 +93,45 @@ namespace Tetris.Game
                     {
                         using (Brush brush = new SolidBrush(color))
                         {
-                            e.Graphics.FillRectangle(brush, posX, posY, cellWidth, cellHeight);
+                            g.FillRectangle(brush, posX, posY, cellWidth, cellHeight);
                         }
                     }
                 }
             }
+
             using (Pen neonPen = new Pen(Color.FromArgb(0, 197, 255), 3))
             {
                 g.DrawRectangle(neonPen, startX, startY, GameManagement.GridWidth * cellWidth, GameManagement.GridHeight * cellHeight);
+            }
+
+            int miniGridCellSize = 20;
+            int nextGridStartX = this.ClientSize.Width - 110;
+            int nextGridStartY = 110;
+            int holdGridStartX = this.ClientSize.Width - 110;
+            int holdGridStartY = 320;
+
+            DrawGridWithFilledCells(g, nextGridStartX, nextGridStartY, miniGridCellSize, 4, 4);
+            DrawGridWithFilledCells(g, holdGridStartX, holdGridStartY, miniGridCellSize, 4, 4);
+        }
+
+        private void DrawGridWithFilledCells(Graphics g, int startX, int startY, int cellSize, int rows, int cols)
+        {
+            using (Brush blackBrush = new SolidBrush(Color.Black))
+            {
+                for (int i = 0; i < rows; i++)
+                {
+                    for (int j = 0; j < cols; j++)
+                    {
+                        int x = startX + j * cellSize;
+                        int y = startY + i * cellSize;
+                        g.FillRectangle(blackBrush, x, y, cellSize, cellSize);
+                    }
+                }
+            }
+
+            using (Pen borderPen = new Pen(Color.FromArgb(0, 197, 255), 3))
+            {
+                g.DrawRectangle(borderPen, startX, startY, cols * cellSize, rows * cellSize);
             }
         }
 

@@ -18,14 +18,17 @@ namespace Tetris.Game
         static double increase_speed = 50;
         private GeneralPieces? Piece;
         private GameManagement? _gameManagement;
+        private PiecesManagement _piecesControl;
         private Form _gameForm;
         private int fullFall;
         private System.Timers.Timer movementTimer;
+        private bool askHold = false; 
 
         public Running(Form gameForm, GameManagement gameManagement)
         {
             _gameForm = gameForm;
             _gameManagement = gameManagement;
+            _piecesControl = new PiecesManagement(_gameManagement);
 
             movementTimer = new System.Timers.Timer(50);
             movementTimer.Elapsed += (sender, e) => Movement();
@@ -44,6 +47,12 @@ namespace Tetris.Game
             if (_gameManagement == null)
             {
                 Console.WriteLine("Erreur : _gameManagement est null.");
+                return;
+            }
+
+            if (_piecesControl == null)
+            {
+                Console.WriteLine("Erreur = _piecesControl est null.");
                 return;
             }
 
@@ -69,18 +78,29 @@ namespace Tetris.Game
             {
                 Console.WriteLine($"Erreur lors de l'appel à Invalidate : {ex.Message}");
             }
+            
 
             while (!loose)
             {
-                if (fullFall == 1 || score <= 0)
+                if (fullFall == 1 || score <= 0 || Piece == null)
                 {
                     _gameManagement.CheckFullLines();
-                    Piece = new RandomPiece(_gameManagement).NewRandomPiece();
+                    Piece = new PiecesManagement(_gameManagement).NewRandomPiece();
                     Piece.Place(_gameForm);
                 }
-                fullFall = Piece.Fall(_gameForm);
-                if (fullFall == 2) 
-                    loose = true;
+
+                if (askHold)
+                {
+                    Piece.DeletePiece(_gameForm);
+                    Piece = _piecesControl.PieceHolder(Piece);
+                    if (Piece != null)
+                        Piece.Place(_gameForm);
+                    askHold = false;
+                }
+                if (Piece != null)
+                    fullFall = Piece.Fall(_gameForm);
+                    if (fullFall == 2) 
+                        loose = true;
                 Console.WriteLine(loose);
                 score += 10;
                 AdjustTimerSpeed();
@@ -125,6 +145,10 @@ namespace Tetris.Game
                 if (lastPressedKey == "S")
                 {
                     Piece.Fall(_gameForm);
+                }
+                if (lastPressedKey == "C")
+                {
+                    askHold = true;
                 }
                 if (lastPressedKey == " ")
                 {

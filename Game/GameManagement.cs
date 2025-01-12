@@ -136,7 +136,5 @@ namespace Tetris.Game
 
             return Color.FromArgb(originalColor.A, r, g, b);
         }
-
-
     }
 }

@@ -8,12 +8,13 @@ using Tetris.Pieces;
 
 namespace Tetris.Game
 {
-    internal class RandomPiece
+    internal class PiecesManagement
     {
         Random random = new Random();
         private GameManagement _gameManagement;
+        private GeneralPieces holdPiece;
 
-        public RandomPiece(GameManagement gameManagement)
+        public PiecesManagement(GameManagement gameManagement)
         {
             _gameManagement = gameManagement;
         }
@@ -39,6 +40,18 @@ namespace Tetris.Game
                     return new Z_Piece(_gameManagement);
             }
             return new I_Piece(_gameManagement);
+        }
+
+        public GeneralPieces PieceHolder(GeneralPieces piece)
+        {
+            if (holdPiece != null)
+            {
+                var tempHolder = holdPiece;
+                holdPiece = piece;
+                return tempHolder;
+            }
+            holdPiece = piece;
+            return null;
         }
     }
 }
